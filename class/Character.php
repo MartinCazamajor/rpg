@@ -1,4 +1,7 @@
 <?php
+namespace Player;
+
+use Ressource\Database;
 
 class Character
 {
