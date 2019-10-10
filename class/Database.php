@@ -6,7 +6,7 @@ use Player\Character;
 class database
 {
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $pdo;
 
@@ -29,36 +29,40 @@ class database
         return $statement->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function races($race) :array
+    public function selectRace($race) :array
     {
         $query = "SELECT * FROM race WHERE name='$race'";
         $statement = $this->pdo->query($query);
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+        $races = $statement->fetch(\PDO::FETCH_ASSOC);
+        return $races;
     }
 
-    public function addCharacter(Character $character): string
+    public function addCharacter(bool $valid,Character $character): ?string
     {
-        $name = $character->getName();
-        $query = "SELECT * FROM `character` WHERE name='$name'";
-        $statement = $this->pdo->query($query);
-        if ($statement->fetch() === false){
-            $query = 'INSERT INTO `character` (name, life, id_weapon, id_armor, gold, xp, strength, agility)
+        if ($valid) {
+            $name = $character->getName();
+            $query = "SELECT * FROM `character` WHERE name='$name'";
+            $statement = $this->pdo->query($query);
+            if ($statement->fetch() === false) {
+                $query = 'INSERT INTO `character` (name, life, idWeapon, idArmor, gold, xp, strength, agility, idRace)
                     VALUES
-                    (:name, :life, :id_weapon, :id_armor, :gold, :xp, :strength, :agility)';
-            $statement = $this->pdo->prepare($query);
-            $statement->bindValue(':name', $character->getName(), \PDO::PARAM_STR);
-            $statement->bindValue(':life', $character->getLife(), \PDO::PARAM_INT);
-            $statement->bindValue(':id_weapon', $character->getIdWeapon(), \PDO::PARAM_INT);
-            $statement->bindValue(':id_armor', $character->getIdArmor(), \PDO::PARAM_INT);
-            $statement->bindValue(':gold', $character->getGold(), \PDO::PARAM_INT);
-            $statement->bindValue(':xp', $character->getXp(), \PDO::PARAM_INT);
-            $statement->bindValue(':strength', $character->getStrength(), \PDO::PARAM_INT);
-            $statement->bindValue(':agility', $character->getAgility(), \PDO::PARAM_INT);
-            $statement->execute();
-            return "A new character has been added to the database.";
+                    (:name, :life, :idWeapon, :idArmor, :gold, :xp, :strength, :agility, :idRace)';
+                $statement = $this->pdo->prepare($query);
+                $statement->bindValue(':name', $character->getName(), \PDO::PARAM_STR);
+                $statement->bindValue(':life', $character->getLife(), \PDO::PARAM_INT);
+                $statement->bindValue(':idWeapon', $character->getIdWeapon(), \PDO::PARAM_INT);
+                $statement->bindValue(':idArmor', $character->getIdArmor(), \PDO::PARAM_INT);
+                $statement->bindValue(':gold', $character->getGold(), \PDO::PARAM_INT);
+                $statement->bindValue(':xp', $character->getXp(), \PDO::PARAM_INT);
+                $statement->bindValue(':strength', $character->getStrength(), \PDO::PARAM_INT);
+                $statement->bindValue(':agility', $character->getAgility(), \PDO::PARAM_INT);
+                $statement->bindValue(':idRace', $character->getIdRace(), \PDO::PARAM_INT);
+                $statement->execute();
+                return "A new character has been added to the database.";
+            }
+            return "Please choose a different name, this one is already taken.";
         }
-        return "Please choose a different name, this one is already taken.";
-
+        return null;
     }
 
     public function addWeapon(bool $valid, array $post): ?string
@@ -117,5 +121,19 @@ class database
         return $weapons;
     }
 
+    public function showRaces(): array
+    {
+        $statement = $this->pdo->query("SELECT * FROM race");
+        $races = $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $races;
+    }
+
+    public function getObjectCharacter($name): Character
+    {
+        $statement = $this->pdo->query("SELECT * FROM `character` WHERE name='$name'");
+        $statement->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, 'Player\Character');
+        $character = $statement->fetch();
+        return $character;
+    }
 
 }

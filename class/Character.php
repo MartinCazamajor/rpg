@@ -10,10 +10,6 @@ class Character
      */
     private $name;
     /**
-     * @var string
-     */
-    private $race;
-    /**
      * @var int
      */
     private $life;
@@ -34,14 +30,6 @@ class Character
      */
     private $agility;
     /**
-     * @var string
-     */
-    private $weapon;
-    /**
-     * @var string
-     */
-    private $armor;
-    /**
      * @var int
      */
     private $idWeapon;
@@ -50,19 +38,21 @@ class Character
      */
     private $idArmor;
     /**
+     * @var int
+     */
+    private $idRace;
+    /**
      * @var Database
      */
     private $pdo;
 
-    public function __construct($name, $race, Database $pdo) //faire un menu déroulant pour le choix de la race et éviter les fautes d'entrée
+    public function creation($name, $race, Database $pdo): void //faire un menu déroulant pour le choix de la race et éviter les fautes d'entrée
     {
         $this->name = $name;
         $this->pdo = $pdo;
         //récupère les informations liées à la race du personnage
-
-        $races = $pdo->races($race);
-
-        $this->race = $races['name'];
+        $races = $pdo->selectRace($race);
+        $this->idRace = $races['id'];
         $this->life = $races['life'];
         $this->strength = $races['strength'];
         $this->agility = $races['agility'];
@@ -70,17 +60,9 @@ class Character
         $this->idArmor = $races['id_armor'];
 
         //les deux query suivantes servent à équiper l'arme et l'armure de la race de départ du personnage
-        $this->weapon = $pdo->weapons($this->idWeapon)['name'];
-        $this->armor = $pdo->armors($this->idArmor)['name'];
+        $this->idWeapon = $pdo->weapons($this->idWeapon)['id'];
+        $this->idArmor = $pdo->armors($this->idArmor)['id'];
 
-    }
-
-    public function showCharacter(): string
-    {
-        if ($this->life > 0) {
-            return "$this->name est un $this->race avec $this->life points de vie, $this->strength points de force et $this->agility points d'agilité.<br>Il est équipé d'un(e) $this->weapon et porte un(e) $this->armor.<br>";
-        }
-        return "$this->name est décédé...";
     }
 
     public function attack(Character $ennemy): string
@@ -130,14 +112,14 @@ class Character
      */
     public function getWeapon(): string
     {
-        return $this->weapon;
+        return $this->pdo->weapons($this->idWeapon)['name'];
     }
     /**
      * @return string
      */
     public function getArmor(): string
     {
-        return $this->armor;
+        return $this->pdo->armors($this->idArmor)['name'];
     }
     /**
      * @return int
@@ -165,7 +147,14 @@ class Character
      */
     public function getRace(): string
     {
-        return $this->race;
+        return $this->pdo->selectRace($this->idRace)['name'];
+    }
+    /**
+     * @return int
+     */
+    public function getIdRace(): int
+    {
+        return $this->idRace;
     }
     /**
      * @return int

@@ -2,12 +2,23 @@
 require_once 'connec.php';
 require_once 'class/Character.php';
 require_once 'class/Database.php';
+require_once 'class/Check.php';
 use Player\Character;
 use Ressource\Database;
+use Weapon\Check;
 
+$formCheck = new Check($_POST);
 $pdo = new Database(DSN, USER, PASS);
 
-$bob = new Character('Bobbard', 'Humain', $pdo);
+
+$_POST = $formCheck->methodCheck();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nameError = $formCheck->checkName();
+    $character = new Character();
+    $character->creation($_POST['name'], $_POST['race'], $pdo);
+    $send = $pdo->addCharacter($formCheck->getValid(),$character);
+}
 
 ?>
 
@@ -23,38 +34,54 @@ $bob = new Character('Bobbard', 'Humain', $pdo);
 
     <title>Role Playing Gladiator</title>
 </head>
-<body>
-    <div class="container">
+<body = class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">RPGladiator</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">RPGladiator</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/index.php">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Forge des Dieux
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/forge/weapon.php">Armes sacrées</a>
+                        <a class="dropdown-item" href="/forge/armor.php">Armures divines</a>
+                        <a class="dropdown-item" href="/forge/race.php">Moule racial</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/index.php">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Forge des Dieux
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/forge/weapon.php">Armes sacrées</a>
-                            <a class="dropdown-item" href="/forge/armor.php">Armures divines</a>
-                            <a class="dropdown-item" href="/forge/race.php">Moule racial</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                </ul>
+    <form action="" method="post">
+        <div class="row">
+            <div class="form-group col">
+                <label for="name"><?= isset($nameError) ? $nameError : "Name"; ?></label>
+                <input type="text" class="form-control" name="name" id="name" placeholder="Enter the name of the character" value="<?= isset($nameError) ? null : $_POST['name']; ?>">
             </div>
-        </nav>
+            <div class="form-group col">
+                <label for="race">Choose a race</label>
+                <select class="form-control" id="race" name="race">
+                    <?php foreach ($pdo->showRaces() as $race): ?>
+                    <option><?= $race['name'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create a new character</button>
+    </form>
+    <h4><?= isset($send) ? $send : "" ?></h4>
 
-        <h6><?= $pdo->addCharacter($bob); ?></h6>
-    </div>
+
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
