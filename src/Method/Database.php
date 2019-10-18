@@ -1,12 +1,12 @@
 <?php
-namespace Ressource;
+namespace App\Method;
 
-use Player\Character;
+use App\Method;
 
 class database
 {
     /**
-     * @var \PDO
+     * @var PDO
      */
     private $pdo;
 

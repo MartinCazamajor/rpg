@@ -1,7 +1,7 @@
 <?php
-namespace Player;
+namespace App\Method;
 
-use Ressource\Database;
+use App\Method;
 
 class Character
 {

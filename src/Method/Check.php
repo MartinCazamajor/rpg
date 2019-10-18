@@ -1,6 +1,6 @@
 <?php
 
-namespace Weapon;
+namespace App\Method;
 
 
 class Check

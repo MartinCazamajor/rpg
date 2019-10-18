@@ -1,24 +1,8 @@
 <?php
-require_once 'connec.php';
-require_once 'class/Character.php';
-require_once 'class/Database.php';
-require_once 'class/Check.php';
-use Player\Character;
-use Ressource\Database;
-use Weapon\Check;
-
-$formCheck = new Check($_POST);
-$pdo = new Database(DSN, USER, PASS);
-
-
-$_POST = $formCheck->methodCheck();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nameError = $formCheck->checkName();
-    $character = new Character();
-    $character->creation($_POST['name'], $_POST['race'], $pdo);
-    $send = $pdo->addCharacter($formCheck->getValid(),$character);
-}
+require_once __DIR__ . '/../vendor/autoload.php';
+use App\Method\Check;
+use App\Method\Character;
+use App\Method\Database;
 
 ?>
 
@@ -32,9 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>Role Playing Gladiator</title>
+    <title>Moule racial</title>
 </head>
-<body = class="container">
+<body>
+<div class="container">
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">RPGladiator</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,16 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/index.php">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/public/index.php">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Forge des Dieux
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/forge/weapon.php">Armes sacrées</a>
-                        <a class="dropdown-item" href="/forge/armor.php">Armures divines</a>
-                        <a class="dropdown-item" href="/forge/race.php">Moule racial</a>
+                        <a class="dropdown-item" href="/public/forge/weapon.php">Armes sacrées</a>
+                        <a class="dropdown-item" href="/Controller/armor.php">Armures divines</a>
+                        <a class="dropdown-item" href="/Controller/race.php">Moule racial</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
@@ -62,26 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </nav>
 
-    <form action="" method="post">
-        <div class="row">
-            <div class="form-group col">
-                <label for="name"><?= isset($nameError) ? $nameError : "Name"; ?></label>
-                <input type="text" class="form-control" name="name" id="name" placeholder="Enter the name of the character" value="<?= isset($nameError) ? null : $_POST['name']; ?>">
-            </div>
-            <div class="form-group col">
-                <label for="race">Choose a race</label>
-                <select class="form-control" id="race" name="race">
-                    <?php foreach ($pdo->showRaces() as $race): ?>
-                    <option><?= $race['name'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Create a new character</button>
-    </form>
-    <h4><?= isset($send) ? $send : "" ?></h4>
-
-
+</div>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -89,6 +56,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
-
-
-

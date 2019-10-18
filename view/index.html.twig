@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+<form action="" method="post">
+    <div class="row">
+        <div class="form-group col">
+            <label for="name">
+                {% if nameError is same as (null) %}
+                Name
+                {% endif %}
+                {{ nameError }}
+            </label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="Enter the name of the character">
+        </div>
+        <div class="form-group col">
+            <label for="race">Choose a race</label>
+            <select class="form-control" id="race" name="race">
+                {% for race in races %}
+                <option>{{ race['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Create a new character</button>
+</form>
+
+<h4>
+    {% if send is defined %}
+    {{ send }}
+    {% endif %}
+</h4>
+{% endblock %}
