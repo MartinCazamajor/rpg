@@ -29,7 +29,7 @@ class Forge
         $races = $pdo->showRaces();
 
         return [
-            'view' => 'index.html.twig',
+            'view' => 'character.html.twig',
             'parameter' => [
                 'nameError' => $nameError,
                 'races' => $races,

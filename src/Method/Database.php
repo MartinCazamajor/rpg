@@ -26,7 +26,8 @@ class database
     {
         $query = "SELECT * FROM weapon WHERE id=$idWeapon";
         $statement = $this->pdo->query($query);
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+        $return = $statement->fetch(\PDO::FETCH_ASSOC);
+        return $return;
     }
 
     public function selectRace($race) :array
@@ -128,12 +129,42 @@ class database
         return $races;
     }
 
+    public function showCharacters(): array
+    {
+        $query = "SELECT
+       character.name as name, 
+       race.name as race,
+       character.life as currentLife,
+       race.life as maxLife,
+       character.strength as strength,
+       character.agility as agility,
+       weapon.name as weapon,
+       armor.name as armor
+        FROM `character` 
+            INNER JOIN race ON character.idRace = race.id
+            INNER JOIN weapon on character.idWeapon = weapon.id
+            INNER JOIN armor on character.idArmor = armor.id";
+        $statement = $this->pdo->query($query);
+        $characters = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $characters;
+    }
+
     public function getObjectCharacter($name): Character
     {
         $statement = $this->pdo->query("SELECT * FROM `character` WHERE name='$name'");
-        $statement->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, 'Player\Character');
+        $statement->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, 'App\Method\Character');
         $character = $statement->fetch();
+
         return $character;
+    }
+
+    public function changeLife(Character $character)
+    {
+        $name = $character->getName();
+        $life = $character->getLife();
+        $query = "UPDATE `character` SET life = $life WHERE name='$name'";
+        $this->pdo->query($query);
     }
 
 }

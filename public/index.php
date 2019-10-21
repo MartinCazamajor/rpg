@@ -1,14 +1,13 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Method\Character;
-use App\Method\Check;
-use App\Method\Database;
-
 $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/../view');
 $twig = new Twig\Environment($loader);
 
+
+
 $rooting = explode("/",$_SERVER['REQUEST_URI']);
+
 $controler = 'App\Controller\\' . $rooting[1];
 $method = $rooting[2];
 

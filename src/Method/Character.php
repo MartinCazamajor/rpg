@@ -67,20 +67,21 @@ class Character
 
     public function attack(Character $ennemy): string
     {
+        $pdo = new Database(DSN, USER, PASS);
         $dodge = rand(1, 10);
         if ($ennemy->getAgility() >= $dodge) {
             return "$this->name essaye de frapper " . $ennemy->getName() . " mais ce dernier esquive ! ( jet de $dodge pour " . $ennemy->getAgility() . " d'agilité)";
         } else {
-            $rand = rand($this->pdo->weapons($this->idWeapon)['damage_min'], $this->pdo->weapons($this->idWeapon)['damage_max']);
-            $armor = $this->pdo->armors($ennemy->getIdArmor())['reduc_damage'];
+            $rand = rand($pdo->weapons($this->idWeapon)['damage_min'], $pdo->weapons($this->idWeapon)['damage_max']);
+            $armor = $pdo->armors($ennemy->getIdArmor())['reduc_damage'];
             $damage = $this->strength + $rand - $armor;
             $lifeEnnemy = $ennemy->getLife();
             $ennemy->setLife($lifeEnnemy-$damage);
 
             return "$this->name inflige $damage dégâts à "
                 . $ennemy->getName()
-                ." : $this->strength de sa force + $rand de son arme ($this->weapon) - $armor de l'armure adverse (" . $ennemy->getArmor()
-                ."). <br> Il ne lui reste plus que "
+                ." : $this->strength de sa force + $rand de son arme - $armor de l'armure adverse (" . $ennemy->getArmor()
+                ."). Il ne lui reste plus que "
                 .$ennemy->getLife()
                 ." points de vie.";
         }
@@ -112,14 +113,16 @@ class Character
      */
     public function getWeapon(): string
     {
-        return $this->pdo->weapons($this->idWeapon)['name'];
+        $pdo = new Database(DSN, USER, PASS);
+        return $pdo->weapons($this->idWeapon)['name'];
     }
     /**
      * @return string
      */
     public function getArmor(): string
     {
-        return $this->pdo->armors($this->idArmor)['name'];
+        $pdo = new Database(DSN, USER, PASS);
+        return $pdo->armors($this->idArmor)['name'];
     }
     /**
      * @return int
@@ -147,7 +150,8 @@ class Character
      */
     public function getRace(): string
     {
-        return $this->pdo->selectRace($this->idRace)['name'];
+        $pdo = new Database(DSN, USER, PASS);
+        return $pdo->selectRace($this->idRace)['name'];
     }
     /**
      * @return int
