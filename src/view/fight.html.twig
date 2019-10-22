@@ -43,9 +43,10 @@
                 </div>
             </div>
         </div>
-        <form action="/Fight/delete" method="post">
-            <button type="submit" class="btn btn-primary" name="delete" value="{{ character['name'] }}">Supprimer</button>
-        </form>
+        <div class="d-flex justify-content-around mb-2">
+            <a href="/Fight/delete/{{ character['name'] }}" class="btn btn-dark">Supprimer</a>
+            <a href="/Fight/heal/{{ character['name'] }}" class="btn btn-success">Soigner</a>
+        </div>
     </div>
     {% endfor %}
     </div>

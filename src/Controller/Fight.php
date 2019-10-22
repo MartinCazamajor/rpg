@@ -50,13 +50,27 @@ class Fight
         ];
     }
 
-    public function delete()
+    public function delete($name) : array
     {
         $pdo = new Database(DSN, USER, PASS);
+        $characterName = str_replace("%20", " ", $name);
+        //if (isset($_POST['delete'])) {
+            $pdo->deleteCharacter($characterName);
+        //}
+        return $this->select();
+    }
 
-        if (isset($_POST['delete'])) {
-            $pdo->deleteCharacter($_POST['delete']);
-        }
+    public function heal(string $name) : array
+    {
+        $pdo = new Database(DSN, USER, PASS);
+        $characterName = str_replace("%20", " ", $name);
+        $character = $pdo->getObjectCharacter($characterName);
+
+        //if (isset($_POST['heal'])) {
+            $character->healMax();
+            $pdo->changeLife($character);
+        //}
+
         return $this->select();
     }
 }

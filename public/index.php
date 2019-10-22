@@ -9,10 +9,11 @@ $twig = new Twig\Environment($loader);
 $rooting = explode("/",$_SERVER['REQUEST_URI']);
 
 $controler = 'App\Controller\\' . $rooting[1];
-$method = $rooting[2];
+$model = $rooting[2];
+$parameter = isset($rooting[3]) ? $rooting[3]: null;
 
 $twigChoice = new $controler;
-$test = $twigChoice->$method();
+$test = $twigChoice->$model($parameter);
 
 
 echo $twig->render($test['view'], $test['parameter']);
