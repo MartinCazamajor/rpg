@@ -4,9 +4,9 @@ namespace App\Controller;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use App\Method\Check;
-use App\Method\Database;
-use App\Method\Character;
+use App\Model\Check;
+use App\Model\Database;
+use App\Model\Character;
 
 
 class Fight
@@ -35,16 +35,8 @@ class Fight
 
         $pdo->changeLife($defenderObject);
 
-        $characters = $pdo->showCharacters();
-
-        foreach ($characters as $character) {
-            if (in_array($_POST['attacker'], $character)) {
-                $attacker = $character;
-            } elseif (in_array($_POST['defender'], $character)) {
-                $defender = $character;
-            }
-        }
-
+        $attacker = $pdo->getCharacter($_POST['attacker']);
+        $defender = $pdo->getCharacter($_POST['defender']);
 
 
         return [
@@ -56,5 +48,15 @@ class Fight
                 'defender' => $defender,
                 'result' => $result]
         ];
+    }
+
+    public function delete()
+    {
+        $pdo = new Database(DSN, USER, PASS);
+
+        if (isset($_POST['delete'])) {
+            $pdo->deleteCharacter($_POST['delete']);
+        }
+        return $this->select();
     }
 }

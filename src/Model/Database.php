@@ -1,16 +1,16 @@
 <?php
-namespace App\Method;
+namespace App\Model;
 
-use App\Method;
+use App\Model;
 
-class database
+class Database
 {
     /**
      * @var PDO
      */
     private $pdo;
 
-    public function __construct( $dsn, $user, $pass)
+    public function __construct($dsn, $user, $pass)
     {
         $this->pdo = new \PDO($dsn, $user, $pass);
     }
@@ -38,19 +38,20 @@ class database
         return $races;
     }
 
-    public function addCharacter(bool $valid,Character $character): ?string
+    public function addCharacter(bool $valid, Character $character): ?string
     {
         if ($valid) {
             $name = $character->getName();
             $query = "SELECT * FROM `character` WHERE name='$name'";
             $statement = $this->pdo->query($query);
             if ($statement->fetch() === false) {
-                $query = 'INSERT INTO `character` (name, life, idWeapon, idArmor, gold, xp, strength, agility, idRace)
+                $query = 'INSERT INTO `character` (name, life, lifeMax, idWeapon, idArmor, gold, xp, strength, agility, idRace)
                     VALUES
-                    (:name, :life, :idWeapon, :idArmor, :gold, :xp, :strength, :agility, :idRace)';
+                    (:name, :life, :lifeMax, :idWeapon, :idArmor, :gold, :xp, :strength, :agility, :idRace)';
                 $statement = $this->pdo->prepare($query);
                 $statement->bindValue(':name', $character->getName(), \PDO::PARAM_STR);
                 $statement->bindValue(':life', $character->getLife(), \PDO::PARAM_INT);
+                $statement->bindValue(':lifeMax', $character->getlifeMax(), \PDO::PARAM_INT);
                 $statement->bindValue(':idWeapon', $character->getIdWeapon(), \PDO::PARAM_INT);
                 $statement->bindValue(':idArmor', $character->getIdArmor(), \PDO::PARAM_INT);
                 $statement->bindValue(':gold', $character->getGold(), \PDO::PARAM_INT);
@@ -73,7 +74,8 @@ class database
             $query = "SELECT * FROM weapon WHERE name ='$name'";
             $statement = $this->pdo->query($query);
             if ($statement->fetch() === false) {
-                $query = 'INSERT INTO weapon (name, damage_min, damage_max, price) VALUES (:name, :damage_min, :damage_max, :price)';
+                $query = 'INSERT INTO weapon (name, damage_min, damage_max, price) 
+                    VALUES (:name, :damage_min, :damage_max, :price)';
                 $statement = $this->pdo->prepare($query);
                 $statement->bindValue(':name', $post['name'], \PDO::PARAM_STR);
                 $statement->bindValue(':damage_min', $post['damageMin'], \PDO::PARAM_INT);
@@ -94,7 +96,8 @@ class database
             $query = "SELECT * FROM armor WHERE name ='$name'";
             $statement = $this->pdo->query($query);
             if ($statement->fetch() === false) {
-                $query = 'INSERT INTO armor (name, reduc_damage, reduc_agility, price) VALUES (:name, :reduc_damage, :reduc_agility, :price)';
+                $query = 'INSERT INTO armor (name, reduc_damage, reduc_agility, price) 
+                    VALUES (:name, :reduc_damage, :reduc_agility, :price)';
                 $statement = $this->pdo->prepare($query);
                 $statement->bindValue(':name', $post['name'], \PDO::PARAM_STR);
                 $statement->bindValue(':reduc_damage', $post['reducDamage'], \PDO::PARAM_INT);
@@ -134,8 +137,8 @@ class database
         $query = "SELECT
        character.name as name, 
        race.name as race,
-       character.life as currentLife,
-       race.life as maxLife,
+       character.life as life,
+       character.lifeMax as lifeMax,
        character.strength as strength,
        character.agility as agility,
        weapon.name as weapon,
@@ -147,13 +150,39 @@ class database
         $statement = $this->pdo->query($query);
         $characters = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
+        foreach ($characters as $key => $character) {
+                $characters[$key]['lifeBar'] = ($character['life'] / $character['lifeMax']) * 100;
+        }
         return $characters;
+    }
+
+    public function getCharacter(string $name)
+    {
+        $query = "SELECT
+       character.name as name, 
+       race.name as race,
+       character.life as life,
+       character.lifeMax as lifeMax,
+       character.strength as strength,
+       character.agility as agility,
+       weapon.name as weapon,
+       armor.name as armor
+        FROM `character` 
+            INNER JOIN race ON character.idRace = race.id
+            INNER JOIN weapon on character.idWeapon = weapon.id
+            INNER JOIN armor on character.idArmor = armor.id
+            WHERE character.name ='$name'";
+        $statement = $this->pdo->query($query);
+        $character = $statement->fetch(\PDO::FETCH_ASSOC);
+        $character['lifeBar'] = ($character['life'] / $character['lifeMax']) * 100;
+
+        return $character;
     }
 
     public function getObjectCharacter($name): Character
     {
         $statement = $this->pdo->query("SELECT * FROM `character` WHERE name='$name'");
-        $statement->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, 'App\Method\Character');
+        $statement->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, 'App\Model\Character');
         $character = $statement->fetch();
 
         return $character;
@@ -167,4 +196,9 @@ class database
         $this->pdo->query($query);
     }
 
+    public function deleteCharacter(string $name)
+    {
+        $query = "DELETE FROM `character` WHERE name ='$name'";
+        $this->pdo->query($query);
+    }
 }

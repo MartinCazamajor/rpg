@@ -38,11 +38,14 @@
             <p class="card-text">Arme : {{ character['weapon'] }}</p>
             <p class="card-text">Armure : {{ character['armor'] }}</p>
             <div class="progress">
-                <div class="progress-bar bg-danger w-100 " role="progressbar" aria-valuenow="{{ character['currentLife'] }}" aria-valuemin="0" aria-valuemax="{{ character['maxLife'] }}">
-                    {{ character['currentLife'] }} / {{ character['maxLife'] }}
+                <div class="progress-bar bg-danger" style="width: {{ character['lifeBar'] }}%" role="progressbar" aria-valuenow="{{ character['life'] }}" aria-valuemin="0" aria-valuemax="{{ character['lifeMax'] }}">
+                    {{ character['life'] }} / {{ character['lifeMax'] }}
                 </div>
             </div>
         </div>
+        <form action="/Fight/delete" method="post">
+            <button type="submit" class="btn btn-primary" name="delete" value="{{ character['name'] }}">Supprimer</button>
+        </form>
     </div>
     {% endfor %}
     </div>

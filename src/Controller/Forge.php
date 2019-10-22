@@ -4,9 +4,9 @@ namespace App\Controller;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use App\Method\Check;
-use App\Method\Database;
-use App\Method\Character;
+use App\Model\Check;
+use App\Model\Database;
+use App\Model\Character;
 
 
 class Forge

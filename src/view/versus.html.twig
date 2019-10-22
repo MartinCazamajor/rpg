@@ -9,8 +9,8 @@
                 <p class="card-text">Arme : {{ attacker['weapon'] }}</p>
                 <p class="card-text">Armure : {{ attacker['armor'] }}</p>
                 <div class="progress">
-                    <div class="progress-bar bg-danger w-100 " role="progressbar" aria-valuenow="{{ attacker['currentLife'] }}" aria-valuemin="0" aria-valuemax="{{ attacker['maxLife'] }}">
-                        {{ attacker['currentLife'] }} / {{ attacker['maxLife'] }}
+                    <div class="progress-bar bg-danger" style="width: {{ attacker['lifeBar'] }}%" role="progressbar" aria-valuenow="{{ attacker['currentLife'] }}" aria-valuemin="0" aria-valuemax="{{ attacker['lifeMax'] }}">
+                        {{ attacker['life'] }} / {{ attacker['lifeMax'] }}
                     </div>
                 </div>
             </div>
@@ -30,8 +30,8 @@
                 <p class="card-text">Arme : {{ defender['weapon'] }}</p>
                 <p class="card-text">Armure : {{ defender['armor'] }}</p>
                 <div class="progress">
-                    <div class="progress-bar bg-danger w-25" role="progressbar" aria-valuenow="{{ defender['currentLife'] }}" aria-valuemin="0" aria-valuemax="{{ defender['maxLife'] }}">
-                        {{ defender['currentLife'] }} / {{ defender['maxLife'] }}
+                    <div class="progress-bar bg-danger" style="width: {{ defender['lifeBar'] }}%" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="{{ defender['lifeMax'] }}">
+                        {{ defender['life'] }} / {{ defender['lifeMax'] }}
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 <?php
-namespace App\Method;
+namespace App\Model;
 
-use App\Method;
+use App\Model;
 
 class Character
 {
@@ -46,14 +46,19 @@ class Character
      */
     private $pdo;
 
-    public function creation($name, $race, Database $pdo): void //faire un menu déroulant pour le choix de la race et éviter les fautes d'entrée
+    /**
+     * @var int
+     */
+    private $lifeMax;
+
+    public function creation($name, $race, Database $pdo): void
     {
         $this->name = $name;
         $this->pdo = $pdo;
         //récupère les informations liées à la race du personnage
         $races = $pdo->selectRace($race);
         $this->idRace = $races['id'];
-        $this->life = $races['life'];
+        $this->life = $this->lifeMax = $races['life'];
         $this->strength = $races['strength'];
         $this->agility = $races['agility'];
         $this->idWeapon = $races['id_weapon'];
@@ -62,7 +67,6 @@ class Character
         //les deux query suivantes servent à équiper l'arme et l'armure de la race de départ du personnage
         $this->idWeapon = $pdo->weapons($this->idWeapon)['id'];
         $this->idArmor = $pdo->armors($this->idArmor)['id'];
-
     }
 
     public function attack(Character $ennemy): string
@@ -70,7 +74,11 @@ class Character
         $pdo = new Database(DSN, USER, PASS);
         $dodge = rand(1, 10);
         if ($ennemy->getAgility() >= $dodge) {
-            return "$this->name essaye de frapper " . $ennemy->getName() . " mais ce dernier esquive ! ( jet de $dodge pour " . $ennemy->getAgility() . " d'agilité)";
+            return "$this->name essaye de frapper ".
+                $ennemy->getName().
+                " mais rate ! ( jet de $dodge pour ".
+                $ennemy->getAgility().
+                " d'agilité)";
         } else {
             $rand = rand($pdo->weapons($this->idWeapon)['damage_min'], $pdo->weapons($this->idWeapon)['damage_max']);
             $armor = $pdo->armors($ennemy->getIdArmor())['reduc_damage'];
@@ -78,12 +86,13 @@ class Character
             $lifeEnnemy = $ennemy->getLife();
             $ennemy->setLife($lifeEnnemy-$damage);
 
-            return "$this->name inflige $damage dégâts à "
-                . $ennemy->getName()
-                ." : $this->strength de sa force + $rand de son arme - $armor de l'armure adverse (" . $ennemy->getArmor()
-                ."). Il ne lui reste plus que "
-                .$ennemy->getLife()
-                ." points de vie.";
+            return "$this->name inflige $damage dégâts à ".
+                $ennemy->getName().
+                " : $this->strength de sa force + $rand de son arme - $armor de l'armure adverse (".
+                $ennemy->getArmor().
+                "). Il ne lui reste plus que ".
+                $ennemy->getLife().
+                " points de vie.";
         }
     }
 
@@ -180,9 +189,23 @@ class Character
      */
     public function setLife(int $life): void
     {
-        $this->life = $life;
+        if ($life < 0) {
+            $this->life = 0;
+        } else {
+            $this->life = $life;
+        }
     }
 
+    /**
+     * @return int
+     */
+    public function getlifeMax(): int
+    {
+        return $this->lifeMax;
+    }
+
+    public function healMax(): void
+    {
+        $this->setLife($this->lifeMax);
+    }
 }
-
-
