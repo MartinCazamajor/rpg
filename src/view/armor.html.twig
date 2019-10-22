@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Armures divines
+{% endblock %}
+
+{% block content %}
+
+    <form action="" method="post">
+        <div class="form-group">
+            <label for="name">{{ nameError is null ? "Name" : nameError }}</label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="Enter the name of the armor" value="{{nameError is null ? null : name}}">
+        </div>
+        <div class="row">
+            <div class="form-group col">
+                <label for="reducDamage">{{ reducDamageError is null ? "Damage reduction" : reducDamageError }}</label>
+                <input type="number" class="form-control" name="reducDamage" id="reducDamage" placeholder="Damage reduction" value="{{reducDamageError is null ? null : reducDamage}}">
+            </div>
+            <div class="form-group col">
+                <label for="reducAgility">{{ reducAgilityError is null ? "Agility reduction" : reducAgilityError }}</label>
+                <input type="number" class="form-control" name="reducAgility" id="reducAgility" placeholder="Agility reduction" value="{{reducAgilityError is null ? null : reducAgility}}">
+            </div>
+            <div class="form-group col">
+                <label for="price">{{ priceError is null ? "Price" : priceError }}</label>
+                <input type="number" class="form-control" name="price" id="price" placeholder="Price of the armor" value="{{priceError is null ? null : price}}">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create a new armor</button>
+    </form>
+    <h4>{{ send is null ? "": send }}</h4>
+
+    <div class="row justify-content-around">
+        {% for armor in armors %}
+            <div class="card mt-2 border border-dark rounded" style="width: auto;">
+                <div class="card-body align-content-center">
+                    <h5 class="card-title">{{ armor['name'] }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ armor['price'] }} gold</h6>
+                    <p class="card-text">Damages reduction: {{armor['reduc_damage']}}</p>
+                    <p class="card-text">Agility reduction: {{armor['reduc_agility']}}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

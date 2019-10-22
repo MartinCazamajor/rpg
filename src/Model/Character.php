@@ -1,7 +1,7 @@
 <?php
-namespace Player;
+namespace App\Model;
 
-use Ressource\Database;
+use App\Model;
 
 class Character
 {
@@ -9,10 +9,6 @@ class Character
      * @var string
      */
     private $name;
-    /**
-     * @var string
-     */
-    private $race;
     /**
      * @var int
      */
@@ -34,14 +30,6 @@ class Character
      */
     private $agility;
     /**
-     * @var string
-     */
-    private $weapon;
-    /**
-     * @var string
-     */
-    private $armor;
-    /**
      * @var int
      */
     private $idWeapon;
@@ -50,57 +38,61 @@ class Character
      */
     private $idArmor;
     /**
+     * @var int
+     */
+    private $idRace;
+    /**
      * @var Database
      */
     private $pdo;
 
-    public function __construct($name, $race, Database $pdo) //faire un menu déroulant pour le choix de la race et éviter les fautes d'entrée
+    /**
+     * @var int
+     */
+    private $lifeMax;
+
+    public function creation($name, $race, Database $pdo): void
     {
         $this->name = $name;
         $this->pdo = $pdo;
         //récupère les informations liées à la race du personnage
-
-        $races = $pdo->races($race);
-
-        $this->race = $races['name'];
-        $this->life = $races['life'];
+        $races = $pdo->selectRace($race);
+        $this->idRace = $races['id'];
+        $this->life = $this->lifeMax = $races['life'];
         $this->strength = $races['strength'];
         $this->agility = $races['agility'];
         $this->idWeapon = $races['id_weapon'];
         $this->idArmor = $races['id_armor'];
 
         //les deux query suivantes servent à équiper l'arme et l'armure de la race de départ du personnage
-        $this->weapon = $pdo->weapons($this->idWeapon)['name'];
-        $this->armor = $pdo->armors($this->idArmor)['name'];
-
-    }
-
-    public function showCharacter(): string
-    {
-        if ($this->life > 0) {
-            return "$this->name est un $this->race avec $this->life points de vie, $this->strength points de force et $this->agility points d'agilité.<br>Il est équipé d'un(e) $this->weapon et porte un(e) $this->armor.<br>";
-        }
-        return "$this->name est décédé...";
+        $this->idWeapon = $pdo->weapons($this->idWeapon)['id'];
+        $this->idArmor = $pdo->armors($this->idArmor)['id'];
     }
 
     public function attack(Character $ennemy): string
     {
+        $pdo = new Database(DSN, USER, PASS);
         $dodge = rand(1, 10);
         if ($ennemy->getAgility() >= $dodge) {
-            return "$this->name essaye de frapper " . $ennemy->getName() . " mais ce dernier esquive ! ( jet de $dodge pour " . $ennemy->getAgility() . " d'agilité)";
+            return "$this->name essaye de frapper ".
+                $ennemy->getName().
+                " mais rate ! ( jet de $dodge pour ".
+                $ennemy->getAgility().
+                " d'agilité)";
         } else {
-            $rand = rand($this->pdo->weapons($this->idWeapon)['damage_min'], $this->pdo->weapons($this->idWeapon)['damage_max']);
-            $armor = $this->pdo->armors($ennemy->getIdArmor())['reduc_damage'];
+            $rand = rand($pdo->weapons($this->idWeapon)['damage_min'], $pdo->weapons($this->idWeapon)['damage_max']);
+            $armor = $pdo->armors($ennemy->getIdArmor())['reduc_damage'];
             $damage = $this->strength + $rand - $armor;
             $lifeEnnemy = $ennemy->getLife();
             $ennemy->setLife($lifeEnnemy-$damage);
 
-            return "$this->name inflige $damage dégâts à "
-                . $ennemy->getName()
-                ." : $this->strength de sa force + $rand de son arme ($this->weapon) - $armor de l'armure adverse (" . $ennemy->getArmor()
-                ."). <br> Il ne lui reste plus que "
-                .$ennemy->getLife()
-                ." points de vie.";
+            return "$this->name inflige $damage dégâts à ".
+                $ennemy->getName().
+                " : $this->strength de sa force + $rand de son arme - $armor de l'armure adverse (".
+                $ennemy->getArmor().
+                "). Il ne lui reste plus que ".
+                $ennemy->getLife().
+                " points de vie.";
         }
     }
 
@@ -130,14 +122,16 @@ class Character
      */
     public function getWeapon(): string
     {
-        return $this->weapon;
+        $pdo = new Database(DSN, USER, PASS);
+        return $pdo->weapons($this->idWeapon)['name'];
     }
     /**
      * @return string
      */
     public function getArmor(): string
     {
-        return $this->armor;
+        $pdo = new Database(DSN, USER, PASS);
+        return $pdo->armors($this->idArmor)['name'];
     }
     /**
      * @return int
@@ -165,7 +159,15 @@ class Character
      */
     public function getRace(): string
     {
-        return $this->race;
+        $pdo = new Database(DSN, USER, PASS);
+        return $pdo->selectRace($this->idRace)['name'];
+    }
+    /**
+     * @return int
+     */
+    public function getIdRace(): int
+    {
+        return $this->idRace;
     }
     /**
      * @return int
@@ -187,9 +189,23 @@ class Character
      */
     public function setLife(int $life): void
     {
-        $this->life = $life;
+        if ($life < 0) {
+            $this->life = 0;
+        } else {
+            $this->life = $life;
+        }
     }
 
+    /**
+     * @return int
+     */
+    public function getlifeMax(): int
+    {
+        return $this->lifeMax;
+    }
+
+    public function healMax(): void
+    {
+        $this->setLife($this->lifeMax);
+    }
 }
-
-

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="d-flex justify-content-around align-items-center mt-5">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{ attacker['name'] }}</h5>
+                <p class="card-subtitle mb-2 text-muted">{{ attacker['race'] }}</p>
+                <p class="card-text">Arme : {{ attacker['weapon'] }}</p>
+                <p class="card-text">Armure : {{ attacker['armor'] }}</p>
+                <div class="progress">
+                    <div class="progress-bar bg-danger" style="width: {{ attacker['lifeBar'] }}%" role="progressbar" aria-valuenow="{{ attacker['currentLife'] }}" aria-valuemin="0" aria-valuemax="{{ attacker['lifeMax'] }}">
+                        {{ attacker['life'] }} / {{ attacker['lifeMax'] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form action="/Fight/versus" method="post">
+            <div class="col">
+                <input type="text" name="attacker" value="{{ attacker['name'] }}">
+                <input type="text" name="defender" value="{{ defender['name'] }}">
+                <button type="submit" class="btn btn-primary btn-block"> FIGHT !</button>
+            </div>
+        </form>
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{ defender['name'] }}</h5>
+                <p class="card-subtitle mb-2 text-muted">{{ defender['race'] }}</p>
+                <p class="card-text">Arme : {{ defender['weapon'] }}</p>
+                <p class="card-text">Armure : {{ defender['armor'] }}</p>
+                <div class="progress">
+                    <div class="progress-bar bg-danger" style="width: {{ defender['lifeBar'] }}%" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="{{ defender['lifeMax'] }}">
+                        {{ defender['life'] }} / {{ defender['lifeMax'] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>{{ result }}</p>
+{% endblock %}

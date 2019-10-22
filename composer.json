@@ -1,0 +1,20 @@
+{
+    "name": "wilder/rpg",
+    "description": "Personnal RPG project",
+    "authors": [
+        {
+            "name": "Martin Cazamajor",
+            "email": "martin.cazamajor@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^2.12",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "autoload": {
+        "files" : ["connec.php"],
+        "psr-4": {
+            "App\\" : "src/"
+        }
+    }
+}

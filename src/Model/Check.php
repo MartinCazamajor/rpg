@@ -1,7 +1,6 @@
 <?php
 
-namespace Weapon;
-
+namespace App\Model;
 
 class Check
 {
@@ -76,7 +75,7 @@ class Check
         if (!isset($this->post['damageMin']) || empty($this->post['damageMin'])) {
             $this->damageMinError = "*Choose a minimum for the damages*";
             $this->valid = false;
-        } elseif (!is_numeric($this->post['damageMin'])){
+        } elseif (!is_numeric($this->post['damageMin'])) {
             $this->damageMinError = "*Enter a number*";
             $this->valid = false;
         } elseif ($this->post['damageMin'] > $this->post['damageMax']) {
@@ -91,7 +90,7 @@ class Check
         if (!isset($this->post['reducDamage']) || empty($this->post['reducDamage'])) {
             $this->reducDamageError = "*Choose a damage reduction*";
             $this->valid = false;
-        } elseif (!is_numeric($this->post['reducDamage']) || $this->post['reducDamage'] < 0 ){
+        } elseif (!is_numeric($this->post['reducDamage']) || $this->post['reducDamage'] < 0) {
             $this->reducDamageError = "*Enter a positive number*";
             $this->valid = false;
         }
@@ -103,7 +102,7 @@ class Check
         if (!isset($this->post['reducAgility']) || empty($this->post['reducAgility'])) {
             $this->reducAgilityError = "*Choose an agility reduction*";
             $this->valid = false;
-        } elseif (!is_numeric($this->post['reducAgility']) || $this->post['reducAgility'] < 0 ){
+        } elseif (!is_numeric($this->post['reducAgility']) || $this->post['reducAgility'] < 0) {
             $this->reducAgilityError = "*Enter a positive number*";
             $this->valid = false;
         }
@@ -115,7 +114,7 @@ class Check
         if (!isset($this->post['damageMax']) || empty($this->post['damageMax'])) {
             $this->damageMaxError = "*Choose a maximum for the damages*";
             $this->valid = false;
-        } elseif (!is_numeric($this->post['damageMax'])){
+        } elseif (!is_numeric($this->post['damageMax'])) {
             $this->damageMinError = "*Enter a number*";
             $this->valid = false;
         } elseif ($this->post['damageMin'] > $this->post['damageMax']) {
@@ -138,7 +137,4 @@ class Check
     {
         return $this->valid;
     }
-
-
-
 }
