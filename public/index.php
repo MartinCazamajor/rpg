@@ -8,14 +8,14 @@ $twig = new Twig\Environment($loader);
 
 $rooting = explode('/',$_SERVER['REQUEST_URI']);
 
-if ($rooting === ['','']) {
+if ($rooting === ['','']){
     $controler ='App\Controller\Fight';
     $model = 'select';
     $parameter = null;
 } else {
     $controler = 'App\Controller\\' . $rooting[1];
 $model = $rooting[2];
-$parameter = isset($rooting[3]) ? $rooting[3]: null; }
+$parameter = isset($rooting[3]) ? $rooting[3]: null;}
 
 $twigChoice = new $controler;
 $test = $twigChoice->$model($parameter);

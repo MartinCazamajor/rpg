@@ -54,9 +54,9 @@ class Fight
     {
         $pdo = new Database(DSN, USER, PASS);
         $characterName = str_replace("%20", " ", $name);
-        //if (isset($_POST['delete'])) {
-            $pdo->deleteCharacter($characterName);
-        //}
+
+        $pdo->deleteCharacter($characterName);
+
         return $this->select();
     }
 
@@ -66,11 +66,10 @@ class Fight
         $characterName = str_replace("%20", " ", $name);
         $character = $pdo->getObjectCharacter($characterName);
 
-        //if (isset($_POST['heal'])) {
+        if ($character->getLife() != $character->getlifeMax()){
             $character->healMax();
             $pdo->changeLife($character);
-        //}
-
+        }
         return $this->select();
     }
 }

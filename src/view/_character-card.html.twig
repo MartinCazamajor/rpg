@@ -1,0 +1,17 @@
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">{{ character['name'] }}</h5>
+        <p class="card-subtitle mb-2 text-muted">{{ character['race'] }}</p>
+        <p class="card-text">Arme : {{ character['weapon'] }}</p>
+        <p class="card-text">Armure : {{ character['armor'] }}</p>
+        <div class="progress">
+            <div class="progress-bar bg-danger" style="width: {{ character['lifeBar'] }}%" role="progressbar" aria-valuenow="{{ character['life'] }}" aria-valuemin="0" aria-valuemax="{{ character['lifeMax'] }}">
+                {{ character['life'] }} / {{ character['lifeMax'] }}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-around mb-2">
+        <a href="/Fight/delete/{{ character['name'] }}" class="btn btn-dark">Supprimer</a>
+        <a href="/Fight/heal/{{ character['name'] }}" class="btn btn-success">Soigner</a>
+    </div>
+</div>
